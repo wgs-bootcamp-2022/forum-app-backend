@@ -1,0 +1,38 @@
+<%- include('layout/header') %> 
+      <div class = "container">
+        <div class="card text-left w-30">
+          <div class="card-header text-center">
+            <h5>List of Contacts</h5>
+          </div>
+          <% if (data.length < 1) { %>
+            <p>Contact data is empty</p>
+            <div class="card-header">
+              <a href="/contact/add" class="btn btn-primary" role="button" aria-disabled="true">Add Contact</a>
+            </div>
+            <% } else {%>
+          <div class="card-header">
+            <a href="/contact/add" class="btn btn-primary" role="button" aria-disabled="true">Add Contact</a>
+          </div>
+          <div class="card-body">
+            <table class="table table-success table-striped">
+              <tr>
+                <th>Full Name</th>
+                <th>Mobile Phone Number</th>
+                <th>Action</th>
+              </tr>
+              <% data.forEach(contacts => { %>
+                <tr>
+                  <td><%= contacts.name %> </td>
+                  <td><%= contacts.number %> </td>
+                  <td> 
+                    <a href="/contact/<%= contacts.id %>/detail" class="btn btn-primary" role="button" aria-disabled="true">Detail</a>
+                  </td>
+              </tr>
+              <% }) %>
+          </table>
+          </div>
+        </div>
+      <% } %>
+      </div>
+
+<%- include('layout/footer') %> 
