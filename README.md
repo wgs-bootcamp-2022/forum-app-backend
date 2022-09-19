@@ -1,5 +1,5 @@
 # forum-app-backend
-- Minimal Requirement
+- [ ] Minimal Requirement
 - [x] CRUD 
 - [x] LOGIN
 - [x] User Registration
@@ -8,3 +8,7 @@
 - [x] Main Forum
 - [x] Sub Forum
 - [x] Discussion
+
+- Additional Feature
+- [x] Login JWT Authentication  
+

@@ -1,2 +1,9 @@
 {"short":"POST","url":"/signup","status":"200","length":"47","response-time":"296.734 ms"}
 {"short":"POST","url":"/signup","status":"200","length":"47","response-time":"223.962 ms"}
+{"short":"POST","url":"/signup","status":"200","length":"47","response-time":"326.935 ms"}
+{"short":"POST","url":"/signin","status":"200","length":"223","response-time":"417.228 ms"}
+{"short":"POST","url":"/forum/add","status":"200","length":"48","response-time":"36.988 ms"}
+{"short":"POST","url":"/forum/sub_forum","status":"200","length":"36","response-time":"20.202 ms"}
+{"short":"POST","url":"/forum/sub_forum/comment","status":"200","length":"35","response-time":"10.053 ms"}
+{"short":"POST","url":"/profile/image","status":"200","length":"51","response-time":"28.546 ms"}
+{"short":"GET","url":"/forum/monitoring/1","status":"200","length":"309","response-time":"12.646 ms"}
