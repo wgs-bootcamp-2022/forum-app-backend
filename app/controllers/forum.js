@@ -7,24 +7,9 @@ const User = db.user
 const UserRole = db.user_role
 const ImageProfile = db.image_profile
 const ForumSubscription = db.forum_subscription
-const Op = db.Sequelize.Op;
 const multer = require('multer');
 const path = require('path')
 const sequelize = db.sequelize
-
-const morgan = require('morgan');
-const fs = require('fs')
-const filepath = './public/log.json'
-
-
-exports.log = ()=> {
-  const morganLog = morgan(':method :url :status :response-time ms - :res[content-length]');
-  const readFIle = fs.readFileSync(filepath,'utf-8')
-  const datas = JSON.parse(readFIle)
-  datas.push(morganLog)
-  fs.writeFileSync(filepath,JSON.stringify(datas))
-}
-
 
 exports.upload = multer({
   storage: multer.diskStorage(

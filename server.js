@@ -1,8 +1,10 @@
 const express = require("express");
 const cors = require("cors");
-const morgan = require('morgan');
 const path = require('path');
 const app = express();
+const fs = require('fs')
+const morgan = require('morgan')
+const json = require('morgan-json');
 
 var corsOptions = {
   origin: "http://localhost:8081"
@@ -18,10 +20,26 @@ db.sequelize.sync({force: true}).then(() => {
   initial();
 });
 
-// parse requests of content-type - application/json
+
 app.use(express.json());
 app.use('/public', express.static(path.join(__dirname, 'public')))
-app.use(morgan('dev'));
+
+const format = json({
+  short: ':method',
+  url :  ':url',
+  status: ':status',
+  length: ':res[content-length]',
+  'response-time': ':response-time ms'
+});
+
+const accessLogStream = fs.createWriteStream('./public/logging/log.log', {flags: 'a'});
+app.use(morgan({format: format, stream: {
+  write: function(str)
+  {
+      accessLogStream.write(str);
+  }
+}}));
+
 // parse requests of content-type - application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true }));
 
