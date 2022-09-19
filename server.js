@@ -32,6 +32,7 @@ const format = json({
   'response-time': ':response-time ms'
 });
 
+// create app log
 const accessLogStream = fs.createWriteStream('./public/logging/log.log', {flags: 'a'});
 app.use(morgan({format: format, stream: {
   write: function(str)
@@ -61,11 +62,6 @@ function initial() {
     name: "superadmin"
   });
 }
-
-// simple route
-app.get("/", (req, res) => {
-  res.json({ message: "Welcome to bezkoder application." });
-});
 
 require('./app/routes/auth')(app);
 require('./app/routes/forum')(app);
