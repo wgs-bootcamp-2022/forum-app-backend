@@ -29,8 +29,8 @@ exports.upload = multer({
   ), 
 });
 
-const getHome = (req,res) => {
-  res.render('login')
+exports.getHome = (req,res) => {
+  res.render('/')
 }
 
 //proses upload image

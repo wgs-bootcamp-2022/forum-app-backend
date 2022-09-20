@@ -13,7 +13,7 @@ module.exports = function(app) {
 
   //create main forum (admin)
   app.post("/forum/add",
-  [authJwt.verifyToken], controller.createForum)
+  [authJwt.verifyToken, authJwt.isAdmin], controller.createForum)
 
   //create sub forum (user, admin, superadmin)
   app.post("/forum/sub_forum",
@@ -27,10 +27,11 @@ module.exports = function(app) {
   app.post("/update/user/:id/role/:id",[authJwt.verifyToken, authJwt.isSuperAdmin], controller.updateUsertoAdmin)
 
   //delete comment (admin)
-  app.post("/delete/comment/:id", controller.deleteCommenByAdmin)
+  app.post("/delete/comment/:id", [authJwt.verifyToken, authJwt.isAdmin], controller.deleteCommenByAdmin)
 
 
   // get
+  app.get('/', controller.getHome)
   app.get("/forum", [authJwt.verifyToken], controller.getAllForum );
   app.get("/forum/:id",[authJwt.verifyToken],controller.getForumById);
 
@@ -40,24 +41,15 @@ module.exports = function(app) {
   app.get('/comment/all', [authJwt.verifyToken],controller.getAllComment)
   
   //get all relation of users
-
-
   //
   // app.get('/profile/details/:userId', controller.getAllUserProfile)
   // uplodat image profile
   
   app.post('/profile/image',[authJwt.verifyToken], controller.upload.single('image'), controller.uploadImage)
   app.get('/profile/image/:filename',[authJwt.verifyToken], controller.getImage);
-
-
-
   app.get('/forum/subforum/all/:id',controller.forumSubForum)
   app.get('/forum/subforum/forumpost/:id',controller.subForumDiscussion)
   app.get('/forum/profil/:id',controller.userProfile)
   app.get('/forum/to_post/:forumId/:subForumId',controller.forumToPost)
   app.get('/forum/monitoring/:userId',controller.getAllUserProfileForum)
-
-
-
-
 };

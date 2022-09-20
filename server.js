@@ -5,6 +5,7 @@ const app = express();
 const fs = require('fs')
 const morgan = require('morgan')
 const json = require('morgan-json');
+const expressLayouts = require('express-ejs-layouts')
 
 var corsOptions = {
   origin: "http://localhost:8081"
@@ -20,10 +21,12 @@ db.sequelize.sync({force: true}).then(() => {
   initial();
 });
 
-
+app.use(expressLayouts)
 app.use(express.json());
 app.use('/public', express.static(path.join(__dirname, 'public')))
-
+app.set('layout', './layout/home')
+app.use(express.urlencoded({ extended: true })); // Untuk parsing body request
+app.set('view engine', 'ejs');
 const format = json({
   short: ':method',
   url :  ':url',
@@ -45,6 +48,8 @@ app.use(morgan({format: format, stream: {
 app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static('public'));
+
+db.sequelize.sync();
 
 function initial() {
   Role.create({

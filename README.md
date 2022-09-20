@@ -1,14 +1,34 @@
 # forum-app-backend
 ## Minimal Requirement
 - [x] CRUD 
+    - [x] User Registration
+    - [x] Create Main Forum relation to User
+    - [x] Create Sub-Forum relation ro Main Forum
+    - [x] Create Comment Discussion relation to Sub-Forum
+    - [x] Update User Role
+    - [x] Delete Comment Discussion by Admin
+    - [x] Get ALl Main-Forum by UserId
+    - [x] Get Main-Forum by ID
+    - [x] Get All Sub-Forum 
+    - [x] Get All Sub-Forum by ForumID
+    - [x] Get All Discussion
+    - [x] Get All Discussion by SubForumId
+    - [x] Get All Discussion by forumId and subforumId
+    - [ ] Get All relation of User
+    - [ ] Get All realation of Forum
+    - [x] Get All Relation of Sub Forum
+    - [ ] Get All Relation of Doscussion
+    - [x] Get Relation by Id
+    - [ ] Logout
 - [x] LOGIN
+    - [x] LOGIN JWT Authentication
 - [x] User Registration
 - [x] App Log
+    - [x] App Log with morgan
 - [x] Picture of User
+    - [x] Upload Profil Picture
 - [x] Main Forum
+    - Create By Admin
 - [x] Sub Forum
+    - Create by User and Admin
 - [x] Discussion
-
-## Additional Feature
-- [x] Login JWT Authentication  
-
