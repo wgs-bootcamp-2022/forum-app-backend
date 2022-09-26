@@ -41,12 +41,10 @@ exports.getImage = (req, res) => {
 }
 //create main forum
 exports.createForum = (req, res) => {
-    const filepath = req.file.path;
      Forum.create({
       title: req.body.title,
       description: req.body.description,
       content: req.body.content,
-      picture: filepath
     })
     .then(user => {
       if (req.body.userId) {

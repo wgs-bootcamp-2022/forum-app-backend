@@ -12,11 +12,11 @@ const db = require("./app/models");
 const Role = db.role;
 
 
-// db.sequelize.sync({force: true}).then(() => {
-//   console.log('Drop and Resync Db');
-//   initial();
-// });
-db.sequelize.sync();
+db.sequelize.sync({force: true}).then(() => {
+  console.log('Drop and Resync Db');
+  initial();
+});
+// db.sequelize.sync();
 
 app.use(cors())
 app.use(expressLayouts)
@@ -71,7 +71,6 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static('public'));
 
-// db.sequelize.sync();
 
 function initial() {
   Role.create({

@@ -32,6 +32,8 @@ db.sub_forum = require("../models/sub_forum.js")(sequelize, Sequelize);
 db.forum_subscription = require("../models/forum_subscription.js")(sequelize, Sequelize);
 db.forum_post = require("../models/forum_post.js")(sequelize, Sequelize);
 db.image_profile = require("../models/image_profile.js")(sequelize, Sequelize);
+db.image_forum = require("../models/image_forum.js")(sequelize, Sequelize);
+
 
 
 // user dan role many to many, user bisa mempunyai banyak role dan setiap role punya banyak user
@@ -51,6 +53,13 @@ db.user.belongsToMany(db.role, {
 db.user.hasOne(db.image_profile)
 db.image_profile.belongsTo(db.user, {
   foreignKey:"userId"
+})
+
+//forum dan image forum one to one
+
+db.forum.hasOne(db.image_forum)
+db.image_forum.belongsTo(db.forum, {
+  foreignKey:"forumId"
 })
 
 // user_role many to many dengan forum, user bisa membuat banyak forum dan forum bisa diakses oleh banyak user

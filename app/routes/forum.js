@@ -17,7 +17,6 @@ module.exports = function(app) {
   //create main forum (admin)
   app.post("/forum/add",
     [authJwt.verifyToken, authJwt.isAdmin], 
-    controllerImage.uploadImageForum.single('image'), 
     controller.createForum
   )
 
@@ -50,7 +49,9 @@ module.exports = function(app) {
   // app.get('/profile/details/:userId', controller.getAllUserProfile)
   // uplodat image profile
   
-  app.post('/profile/image',[authJwt.verifyToken], controllerImage.upload.single('image'), controllerImage.uploadImage)
+  app.post('/profile/image/add',[authJwt.verifyToken], controllerImage.upload.single('image'), controllerImage.uploadImage)
+  app.post('/forum/image/add',[authJwt.verifyToken], controllerImage.uploadImageF.single('image'), controllerImage.uploadImageForum)
+
   app.get('/profile/image/:filename',[authJwt.verifyToken], controller.getImage);
   app.get('/forum/subforum/all/:id',controller.forumSubForum)
   app.get('/forum/subforum/forumpost/:id',controller.subForumDiscussion)
