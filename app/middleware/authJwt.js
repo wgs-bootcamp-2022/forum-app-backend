@@ -7,14 +7,6 @@ const fs = require('fs')
 const filepath = './public/log.json'
 
 
-exports.log = ()=> {
-  const morganLog = morgan(':method :url :status :response-time ms - :res[content-length]');
-  const readFIle = fs.readFileSync(filepath,'utf-8')
-  const datas = JSON.parse(readFIle)
-  datas.push(morganLog)
-  fs.writeFileSync(filepath,JSON.stringify(datas))
-}
-
 verifyToken = (req, res, next) => {
   let token = req.headers["x-access-token"];
 

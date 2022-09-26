@@ -12,6 +12,9 @@ module.exports = (sequelize, Sequelize) => {
       message: {
         type: Sequelize.STRING
       },
+      like:{
+        type: Sequelize.BOOLEAN
+      }
     });
   
     return SubForum;

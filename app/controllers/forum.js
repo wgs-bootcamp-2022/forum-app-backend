@@ -1,4 +1,3 @@
-const { user } = require("../models");
 const db = require("../models");
 const Forum = db.forum;
 const SubForum = db.sub_forum;
@@ -7,56 +6,9 @@ const User = db.user
 const UserRole = db.user_role
 const ImageProfile = db.image_profile
 const ForumSubscription = db.forum_subscription
-const multer = require('multer');
 const path = require('path')
 const sequelize = db.sequelize
 
-exports.upload = multer({
-  storage: multer.diskStorage(
-      {
-          destination: function (req, file, cb) {
-              cb(null, 'public/images/');
-          },
-          filename: function (req, file, cb) {
-              cb(
-                  null,
-                  new Date().valueOf() + 
-                  '_' +
-                  file.originalname
-              );
-          }
-      }
-  ), 
-});
-
-exports.getHome = (req,res) => {
-  res.render('/')
-}
-
-//proses upload image
-exports.uploadImage = (req, res) => {
-  const { filename, mimetype, size } = req.file;
-  const filepath = req.file.path;
-  const userId = req.body.userId
-  ImageProfile.create({
-    filename,
-    filepath,
-    mimetype,
-    size,
-    userId
-  }).then(user => {
-      res.json({ success: true, filename })
-    })
-    .catch(err => res 
-      .json(
-        {
-          success: false, 
-          message: 'not found', 
-          stack: err.stack,
-        }
-      )
-  );
-}
 
 //get image
 exports.getImage = (req, res) => {
@@ -89,11 +41,12 @@ exports.getImage = (req, res) => {
 }
 //create main forum
 exports.createForum = (req, res) => {
+    const filepath = req.file.path;
      Forum.create({
       title: req.body.title,
       description: req.body.description,
-      picture: req.body.picture,
-      content: req.body.content
+      content: req.body.content,
+      picture: filepath
     })
     .then(user => {
       if (req.body.userId) {
@@ -105,7 +58,7 @@ exports.createForum = (req, res) => {
             user.setUsers(userId).then(() => {
             res.send({ message: "Forum was registered successfully!" });
           });
-        });
+        })
       } 
     })
     .catch(err => {
@@ -135,6 +88,7 @@ exports.createSubForum = (req, res) => {
 exports.createPostComment = (req, res) => {
   ForumPost.create({
         // id: req.body.id,
+        message:req.body.message,
         content: req.body.content,
         subForumId: req.body.subForumId
     }).then(user => {
@@ -173,7 +127,7 @@ exports.deleteCommenByAdmin = async(req, res) => {
 //get all forum
 exports.getAllForum = async (req, res) => {
   const forums = await Forum.findAll();
-  res.send(forums);
+  res.json(forums);
 };
 
 //get forum by id
@@ -323,9 +277,9 @@ exports.subForumDiscussion = (req, res) => {
       attributes: ['message','picture','createdAt']
     }]
   }).then(forums => {
-     res.send(forums);
+     res.json(forums);
   }) .catch((err) => {
-    res.send(">> Error while finding sub forum: ", err);
+    res.json(">> Error while finding sub forum: ", err);
   });
 } 
 

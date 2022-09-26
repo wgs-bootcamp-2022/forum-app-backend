@@ -1,31 +1,11 @@
-{"short":"POST","url":"/signup","status":"200","length":"47","response-time":"296.734 ms"}
-{"short":"POST","url":"/signup","status":"200","length":"47","response-time":"223.962 ms"}
-{"short":"POST","url":"/signup","status":"200","length":"47","response-time":"326.935 ms"}
-{"short":"POST","url":"/signin","status":"200","length":"223","response-time":"417.228 ms"}
-{"short":"POST","url":"/forum/add","status":"200","length":"48","response-time":"36.988 ms"}
-{"short":"POST","url":"/forum/sub_forum","status":"200","length":"36","response-time":"20.202 ms"}
-{"short":"POST","url":"/forum/sub_forum/comment","status":"200","length":"35","response-time":"10.053 ms"}
-{"short":"POST","url":"/profile/image","status":"200","length":"51","response-time":"28.546 ms"}
-{"short":"GET","url":"/forum/monitoring/1","status":"200","length":"309","response-time":"12.646 ms"}
-{"short":"GET","url":"/","status":"404","length":"139","response-time":"22.031 ms"}
-{"short":"GET","url":"/","status":"404","length":"139","response-time":"19.237 ms"}
-{"short":"GET","url":"/","status":"404","length":"139","response-time":"5.722 ms"}
-{"short":"GET","url":"/","status":"404","length":"139","response-time":"3.275 ms"}
-{"short":"GET","url":"/","status":"404","length":"139","response-time":"12.827 ms"}
-{"short":"GET","url":"/","status":"500","length":"1760","response-time":"29.113 ms"}
-{"short":"GET","url":"/","status":"500","length":"1760","response-time":"8.606 ms"}
-{"short":"GET","url":"/","status":"500","length":"1760","response-time":"1.760 ms"}
-{"short":"GET","url":"/","status":"500","length":"2011","response-time":"20.630 ms"}
-{"short":"GET","url":"/","status":"500","length":"2011","response-time":"14.827 ms"}
-{"short":"GET","url":"/","status":"500","length":"1887","response-time":"40.984 ms"}
-{"short":"GET","url":"/","status":"500","length":"1887","response-time":"6.171 ms"}
-{"short":"GET","url":"/","status":"500","length":"1895","response-time":"18.857 ms"}
-{"short":"GET","url":"/","status":"500","length":"1895","response-time":"9.112 ms"}
-{"short":"GET","url":"/","status":"500","length":"1894","response-time":"29.239 ms"}
-{"short":"GET","url":"/","status":"500","length":"1883","response-time":"35.747 ms"}
-{"short":"POST","url":"/profile/image","status":"200","length":"943","response-time":"315.947 ms"}
-{"short":"POST","url":"/signup","status":"200","length":"47","response-time":"180.565 ms"}
-{"short":"POST","url":"/profile/image","status":"200","length":"51","response-time":"20.775 ms"}
-{"short":"POST","url":"/signup","status":"200","length":"47","response-time":"167.126 ms"}
-{"short":"POST","url":"/forum/add","status":"200","length":"48","response-time":"237.844 ms"}
-{"short":"POST","url":"/profile/image","status":"200","length":"51","response-time":"35.773 ms"}
+::1 - - [Mon, 26 Sep 2022 03:32:10 GMT] "POST /signup HTTP/1.1" 400 49 "-" "PostmanRuntime/7.29.2"
+::1 - - [Mon, 26 Sep 2022 03:33:40 GMT] "POST /signup HTTP/1.1" 400 49 "-" "PostmanRuntime/7.29.2"
+::1 - - [Mon, 26 Sep 2022 03:33:42 GMT] "POST /signin HTTP/1.1" 200 230 "-" "PostmanRuntime/7.29.2"
+::1 - - [Mon, 26 Sep 2022 03:34:32 GMT] "POST /signin HTTP/1.1" 200 230 "-" "PostmanRuntime/7.29.2"
+::1 - - [Mon, 26 Sep 2022 03:35:06 GMT] "POST /signin HTTP/1.1" 200 230 "-" "PostmanRuntime/7.29.2"
+::1 - - [Mon, 26 Sep 2022 03:35:12 GMT] "POST /signin HTTP/1.1" 200 230 "-" "PostmanRuntime/7.29.2"
+::1 - - [Mon, 26 Sep 2022 03:35:13 GMT] "POST /signin HTTP/1.1" 200 230 "-" "PostmanRuntime/7.29.2"
+::1 - - [Mon, 26 Sep 2022 03:38:06 GMT] "POST /signin HTTP/1.1" 200 230 "-" "PostmanRuntime/7.29.2"
+::1 - - [Mon, 26 Sep 2022 03:38:08 GMT] "POST /signin HTTP/1.1" 200 230 "-" "PostmanRuntime/7.29.2"
+::1 - - [Mon, 26 Sep 2022 03:39:07 GMT] "POST /signin HTTP/1.1" 200 230 "-" "PostmanRuntime/7.29.2"
+{"time":"Mon, 26 Sep 2022 03:39:27 GMT","method":"POST","url":"/signin","http_version":"1.1","status":"200","length":"230","response-time":"67.993 ms","user_agent":"PostmanRuntime/7.29.2","session_id":"-","hostname":"kalangkang","instance":"-","pid":"18696"}
