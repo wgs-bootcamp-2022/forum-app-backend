@@ -51,11 +51,9 @@ module.exports = function(app) {
   
   app.post('/profile/image/add',[authJwt.verifyToken], controllerImage.upload.single('image'), controllerImage.uploadImage)
   app.post('/forum/image/add',[authJwt.verifyToken], controllerImage.uploadImageF.single('image'), controllerImage.uploadImageForum)
-
+  app.get('/forum/to_post/:forumId/:subForumId',controller.forumToPost)
   app.get('/profile/image/:filename',[authJwt.verifyToken], controller.getImage);
   app.get('/forum/subforum/all/:id',controller.forumSubForum)
   app.get('/forum/subforum/forumpost/:id',controller.subForumDiscussion)
   app.get('/forum/profil/:id',controller.userProfile)
-  app.get('/forum/to_post/:forumId/:subForumId',controller.forumToPost)
-  app.get('/forum/monitoring/:userId',controller.getAllUserProfileForum)
 };

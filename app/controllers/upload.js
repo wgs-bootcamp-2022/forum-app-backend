@@ -3,6 +3,12 @@ const multer = require('multer');
 const ImageProfile = db.image_profile
 const ImageForum = db.image_forum
 
+const fs = require('fs')
+const { promisify } = require('util')
+const path = require('path')
+
+const rimraf = require('rimraf');
+
 
 exports.upload = multer({
   storage: multer.diskStorage({
@@ -25,7 +31,7 @@ exports.uploadImageF = multer({
   storage: multer.diskStorage(
     {
       destination: function (req, file, cb) {
-          cb(null, 'public/images/forum');
+        cb(null, 'public/images/forum');
       },
       filename: function (req, file, cb) {
         cb(
