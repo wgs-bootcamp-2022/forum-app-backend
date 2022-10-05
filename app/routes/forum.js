@@ -36,24 +36,34 @@ module.exports = function(app) {
 
 
   // get
-  app.get("/forum", controller.getAllForum );
+  app.get("/forum",[authJwt.verifyToken, authJwt.isAdmin], controller.getAllForum );
   app.get("/forum/:id",[authJwt.verifyToken],controller.getForumById);
+  app.get("/forum/search/:title",[authJwt.verifyToken],controller.getForumByTitle);
+app.get('/user/profile/forum/:userId', controller.getAllUserProfileForum)
 
   app.get("forum/subforum",[authJwt.verifyToken],controller.getSubForumAll);
   app.get("/forum/subforum/:id",[authJwt.verifyToken],controller.getSubForumByForumId);
+  
 
   app.get('/comment/all', [authJwt.verifyToken],controller.getAllComment)
   
   //get all relation of users
   //
-  // app.get('/profile/details/:userId', controller.getAllUserProfile)
+  app.get('/profile/details/:userId', controller.getAllUserProfile)
   // uplodat image profile
   
-  app.post('/profile/image/add',[authJwt.verifyToken], controllerImage.upload.single('image'), controllerImage.uploadImage)
+  app.post('/profile/image/add',controllerImage.remove,controllerImage.upload.single('image'), controllerImage.uploadImage)
   app.post('/forum/image/add',[authJwt.verifyToken], controllerImage.uploadImageF.single('image'), controllerImage.uploadImageForum)
   app.get('/forum/to_post/:forumId/:subForumId',controller.forumToPost)
   app.get('/profile/image/:filename',[authJwt.verifyToken], controller.getImage);
   app.get('/forum/subforum/all/:id',controller.forumSubForum)
   app.get('/forum/subforum/forumpost/:id',controller.subForumDiscussion)
   app.get('/forum/profil/:id',controller.userProfile)
+
+  app.get('/user/profil/:userId',controller.userRole)
+
+  app.get('/test', (req, res)=>{
+    res.json('welcome to my app')
+  })
+  app.get('/user', [authJwt.verifyToken, authJwt.isAdmin], controller.getaAllUser)
 };

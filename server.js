@@ -20,10 +20,10 @@ db.sequelize.sync();
 
 app.use(cors())
 app.use(expressLayouts)
+app.use(express.urlencoded({ extended: false })); // Untuk parsing body request
 app.use(express.json());
 app.use('/public', express.static(path.join(__dirname, 'public')))
 app.set('layout', './layout/home')
-app.use(express.urlencoded({ extended: true })); // Untuk parsing body request
 app.set('view engine', 'ejs');
 
 morgan.token('conversation-id', function getConversationId(req) {
@@ -41,8 +41,7 @@ morgan.token('hostname', function getHostname() {
 morgan.token('pid', function getPid() {
   return process.pid;
 });
-
-const format = json({
+const format =  json({
   time: ':date',
   method: ':method',
   url :  ':url',
@@ -57,8 +56,17 @@ const format = json({
   pid: ':pid'
 });
 
+const { readdirSync, rmSync } = require('fs');
+const dir = './public/logging/log.json';
+const remove = (req, res, next) => {
+  // const id = req.body.userId
+
+  // readdirSync(`./public/logging`).forEach(f => rmSync(`${dir}/${f}`));
+  delete dir.time
+  next()
+}
 // // create app log
-const accessLogStream = fs.createWriteStream('./public/logging/log.log', {flags: 'a'});
+const accessLogStream = fs.createWriteStream('./public/logging/log.json');
 app.use(morgan({format: format, stream: {
   write: function(str)
   {
@@ -67,7 +75,7 @@ app.use(morgan({format: format, stream: {
 }}));
 
 // parse requests of content-type - application/x-www-form-urlencoded
-app.use(express.urlencoded({ extended: true }));
+// app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static('public'));
 

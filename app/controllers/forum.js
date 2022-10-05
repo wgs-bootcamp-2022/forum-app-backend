@@ -128,12 +128,22 @@ exports.getAllForum = async (req, res) => {
   res.json(forums);
 };
 
+exports.getaAllUser = async (req, res) => {
+  const users = await User.findAll();
+  res.json(users);
+};
+
 //get forum by id
 exports.getForumById = async(req, res) => {
   const forum = await Forum.findByPk(+req.params.id);
-  res.send(forum);
+  res.json(forum);
 }
 
+exports.getForumByTitle = async(req, res) => {
+  console.log("sdasssssssssssssssssssssssssssssssssssss",req.params.title)
+  const title = await Forum.findOne({ where: { title: req.params.title } });
+  res.json(title);
+}
 //get all sub forum
 exports.getSubForumAll= async(req, res) => {
   const subForums = await SubForum.findAll();
@@ -169,20 +179,20 @@ exports.getCommentById = async(req, res) => {
 // }
 
 //get user-prifile
-// exports.getAllUserProfile = (req, res) => {
-//   const userId = +req.params.userId
-//   sequelize.query(
-//     `SELECT a.username, a.name, a.email, a.address, b.filename, b.filepath FROM users a
-//     JOIN image_profiles b ON a.id = b."userId"
-//     WHERE a.id = '${userId}'
-//     ORDER BY a.name;`
-//   ) .then(usr => {
-//     res.json(usr[0])
+exports.getAllUserProfile = (req, res) => {
+  const userId = +req.params.userId
+  sequelize.query(
+    `SELECT a.username, a.name, a.email, a.address, b.filename, b.filepath FROM users a
+    JOIN image_profiles b ON a.id = b."userId"
+    WHERE a.id = '${userId}'
+    ORDER BY a.name;`
+  ) .then(usr => {
+    res.json(usr[0])
 
-//   }) .catch(err => {
-//     res.send(err)
-//   })
-// }
+  }) .catch(err => {
+    res.send(err)
+  })
+}
 
 //get user-profile-main-forum
 exports.getAllUserProfileForum = (req, res) => {
@@ -334,3 +344,16 @@ exports.masterMonitoring = (req,res) => {
   })
 }
 
+exports.userRole = (req,res) => {
+  const userId = +req.params.userId
+  console.log(userId)
+  sequelize.query(`SELECT a.username, a.name, a.email, b."roleId" FROM users a
+  INNER JOIN user_roles b ON a.id = b."userId"
+  WHERE a.id = '${userId}'`) 
+  .then(data=> {
+        res.json(data[0])
+    
+      }) .catch(err => {
+        res.send(err)
+      })
+}
