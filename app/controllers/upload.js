@@ -86,7 +86,7 @@ exports.uploadImageF = multer({
 });
 
 exports.uploadImage = (req, res) => {
-  const { filename, mimetype, size } = req.body;
+  const { filename, mimetype, size } = req.file;
   const filepath = req.file.path;
   const userId = req.body.userId
   ImageProfile.create({

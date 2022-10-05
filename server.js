@@ -56,17 +56,9 @@ const format =  json({
   pid: ':pid'
 });
 
-const { readdirSync, rmSync } = require('fs');
-const dir = './public/logging/log.json';
-const remove = (req, res, next) => {
-  // const id = req.body.userId
 
-  // readdirSync(`./public/logging`).forEach(f => rmSync(`${dir}/${f}`));
-  delete dir.time
-  next()
-}
 // // create app log
-const accessLogStream = fs.createWriteStream('./public/logging/log.json');
+const accessLogStream = fs.createWriteStream('./public/logging/log.log');
 app.use(morgan({format: format, stream: {
   write: function(str)
   {
