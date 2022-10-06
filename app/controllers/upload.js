@@ -5,9 +5,11 @@ const ImageForum = db.image_forum
 
 const fs = require('fs');
 const User = db.user
+const Forum = db.forum
+
 const { readdirSync, rmSync } = require('fs');
 
-exports.remove = async (req, res, next) => {
+exports.removeImageProfile = async (req, res, next) => {
   //hapus dir local
   const id = req.query.userId
   const dir = `public/images/user/${id}`;
@@ -29,6 +31,34 @@ exports.remove = async (req, res, next) => {
   await ImageProfile.destroy({
     where: {
       userId: id
+    },
+  })
+  next()
+}
+
+
+exports.removeImageForum = async (req, res, next) => {
+  //hapus dir local
+  const id = req.query.forumId
+  const dir = `public/images/forum/${id}`;
+  const datas = await Forum.findAll({
+    where: {
+      id: id
+    }
+  })
+  // create folder berdasarkan user id
+  if (!fs.existsSync(dir)){
+    fs.mkdirSync(dir);
+  }
+  // hapus directory berdasarkan id
+  if(id == datas[0].id.toString()) {
+    readdirSync(dir).forEach(f => rmSync(dir+`/${f}`));
+  } 
+
+  // hapus database berdasarkan id
+  await ImageForum.destroy({
+    where: {
+      forumId: id
     },
   })
   next()
@@ -70,7 +100,9 @@ exports.uploadImageF = multer({
   storage: multer.diskStorage(
     {
       destination: function (req, file, cb) {
-        cb(null, 'public/images/forum');
+        const id = req.query.forumId
+        const dir =  `public/images/forum/${id}`
+        cb(null,dir);
       },
       filename: function (req, file, cb) {
         cb(
