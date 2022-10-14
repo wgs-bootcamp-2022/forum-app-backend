@@ -51,6 +51,7 @@ exports.removeImageForum = async (req, res, next) => {
     fs.mkdirSync(dir);
   }
   // hapus directory berdasarkan id
+
   if(id == datas[0].id.toString()) {
     readdirSync(dir).forEach(f => rmSync(dir+`/${f}`));
   } 
@@ -119,7 +120,7 @@ exports.uploadImageF = multer({
 
 exports.uploadImage = (req, res) => {
   const { filename, mimetype, size } = req.file;
-  const filepath = req.file.path;
+  const filepath = `${req.protocol}://${req.headers.host}/public`+req.file.path.replace(/\\/g, "/").substring("public".length)
   const userId = req.body.userId
   ImageProfile.create({
     filename,

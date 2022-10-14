@@ -14,6 +14,9 @@ module.exports = (sequelize, Sequelize) => {
       }, 
       address: {
         type: Sequelize.STRING
+      },
+      phone:{
+        type: Sequelize.STRING
       }
     });
   
