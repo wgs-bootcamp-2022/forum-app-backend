@@ -9,7 +9,7 @@ const UserRole = db.user_role;
 const ImageProfile = db.image_profile;
 const ForumSubscription = db.forum_subscription;
 const path = require("path");
-const { image_profile } = require("../models");
+const { image_profile, user_role } = require("../models");
 const sequelize = db.sequelize;
 
 //get image
@@ -137,31 +137,34 @@ exports.getAllForum = async (req, res) => {
   res.json(forums);
 };
 
+// get all user 
 exports.getaAllUser = async (req, res) => {
   const users = await User.findAll();
   res.json(users);
 };
 
+// get all data user relasi dengan imahe
 exports.getaAllDataUser = (req, res) => {
   const id = +req.params.id;
   User.findAll({
     attributes: ["name", "username", "address","email","phone", "createdAt", "updatedAt"],
     include: [
       {
-        model: image_profile,
+        model: ImageProfile,
         where: { userId: id },
         attributes: ["filename","filepath"],
       },
     ],
   })
-    .then((forums) => {
-      res.json(forums[0]);
+    .then((data) => {
+      res.json(data[0]);
     })
     .catch((err) => {
-      res.json(">> Error while findinf Forum: ", err);
+      res.json(">> Error while finding Profile Data: ", err);
     });
 };
 
+//searching berdasarkan query params title
 exports.findByTitle = async (req, res) => {
   // const title = req.query.title
   const forum = await Forum.findAll({

@@ -9,6 +9,7 @@ const Forum = db.forum
 
 const { readdirSync, rmSync } = require('fs');
 
+// menghapus image profil file yang sudah ada jika melakukan upload
 exports.removeImageProfile = async (req, res, next) => {
   //hapus dir local
   const id = req.query.userId
@@ -36,6 +37,7 @@ exports.removeImageProfile = async (req, res, next) => {
   next()
 }
 
+// menghapus image forum file yang sudah ada jika melakukan upload
 
 exports.removeImageForum = async (req, res, next) => {
   //hapus dir local
@@ -65,23 +67,12 @@ exports.removeImageForum = async (req, res, next) => {
   next()
 }
 
-// exports.addDir = (req, res, next) => {
-//   const id = req.query.userId
-//   fs.mkdir(`public/images/user/${id}`,function(e){
-//     if(!e || (e && e.code === 'EEXIST')){
-//         //do something with contents
-//     } else {
-//         //debug
-//         console.log(e);
-//     }
-//   });
-//   next()
-// }
-
+//proses upload foto ke lokal storage
 exports.upload = multer({
   storage: multer.diskStorage({
     destination: function (req, file, cb) {
       const id = req.query.userId
+      //foto disimpan berdasarkan direktori id
       const dir = `public/images/user/${id}`
       cb(null, dir);
     },
@@ -97,11 +88,13 @@ exports.upload = multer({
   }), 
 });
 
+//proses upload foto forum ke lokal storage
 exports.uploadImageF = multer({
   storage: multer.diskStorage(
     {
       destination: function (req, file, cb) {
         const id = req.query.forumId
+      //foto disimpan berdasarkan direktori id
         const dir =  `public/images/forum/${id}`
         cb(null,dir);
       },
@@ -118,8 +111,10 @@ exports.uploadImageF = multer({
   ), 
 });
 
+//proses upload informasi file image user ke database
 exports.uploadImage = (req, res) => {
   const { filename, mimetype, size } = req.file;
+  //mengubah format filepah agar bisa di dislay di frontend
   const filepath = `${req.protocol}://${req.headers.host}/public`+req.file.path.replace(/\\/g, "/").substring("public".length)
   const userId = req.body.userId
   ImageProfile.create({
@@ -142,9 +137,11 @@ exports.uploadImage = (req, res) => {
   );
 }
 
+//proses upload informasi file image forum ke database
 exports.uploadImageForum = (req, res) => {
   const { filename, mimetype, size } = req.file;
-  const filepath = req.file.path;
+  //mengubah format filepah agar bisa di dislay di frontend
+  const filepath = `${req.protocol}://${req.headers.host}/public`+req.file.path.replace(/\\/g, "/").substring("public".length)
   const forumId = req.body.forumId
   ImageForum.create({
     filename,
