@@ -51,7 +51,8 @@ db.user.belongsToMany(db.role, {
 
 //user dan image profile one to one
 db.user.hasOne(db.image_profile)
-db.image_profile.belongsTo(db.user, {
+db.image_profile.belongsTo(db.user,  {
+  as:"image_profile",
   foreignKey:"userId"
 })
 
@@ -59,6 +60,7 @@ db.image_profile.belongsTo(db.user, {
 
 db.forum.hasOne(db.image_forum)
 db.image_forum.belongsTo(db.forum, {
+  as:"image_forum",
   foreignKey:"forumId"
 })
 

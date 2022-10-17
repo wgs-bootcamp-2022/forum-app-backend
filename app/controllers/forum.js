@@ -7,11 +7,13 @@ const ForumPost = db.forum_post;
 const User = db.user;
 const UserRole = db.user_role;
 const ImageProfile = db.image_profile;
+const ImageForum = db.image_forum;
+
 const ForumSubscription = db.forum_subscription;
 const path = require("path");
 const { image_profile, user_role } = require("../models");
 const sequelize = db.sequelize;
-
+const IP = require('ip');
 //get image
 exports.getImage = (req, res) => {
   const { filename } = req.params;
@@ -42,6 +44,12 @@ exports.createForum = (req, res) => {
     title: req.body.title,
     description: req.body.description,
     content: req.body.content,
+    image_forum:{
+      filename:"default picture forum",
+      filepath: `${req.protocol}://${IP.address()}:${req.socket.localPort}/public/images/forum/default_image_forum.png`,
+    }
+  },{
+    include:[ImageForum]
   })
     .then(user => {
       if (req.body.userId) {
@@ -113,7 +121,6 @@ exports.updateUsertoAdmin = async (req, res) => {
     req.body,
     {
       where: {
-        roleId: +req.params.roleId,
         userId: +req.params.userId,
       },
     }
@@ -133,7 +140,17 @@ exports.deleteCommenByAdmin = async (req, res) => {
 
 //get all forum
 exports.getAllForum = async (req, res) => {
-  const forums = await Forum.findAll();
+  const forums = await Forum.findAll({
+    attributes:["title","description","content","createdAt"],
+      include:[
+        {
+          model: ImageForum,
+          attributes: ["filename","filepath"],
+        }
+      ]
+    }
+
+  );
   res.json(forums);
 };
 
@@ -148,6 +165,7 @@ exports.getaAllDataUser = (req, res) => {
   const id = +req.params.id;
   User.findAll({
     attributes: ["name", "username", "address","email","phone", "createdAt", "updatedAt"],
+    // where: { id: id },
     include: [
       {
         model: ImageProfile,

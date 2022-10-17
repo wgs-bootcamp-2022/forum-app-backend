@@ -2,8 +2,8 @@ const db = require("../models");
 const config = require("../config/auth");
 const User = db.user;
 const Role = db.role;
-const Forum = db.forum;
-
+const ImageProfile = db.image_profile;
+const IP = require('ip');
 
 const Op = db.Sequelize.Op;
 
@@ -17,8 +17,15 @@ exports.signup = (req, res) => {
     name: req.body.name,
     email: req.body.email,
     password: bcrypt.hashSync(req.body.password, 8),
-    picture: req.body.picture,
-    address: req.body.address
+    //otomatis tambah foto profil ketika register
+    image_profile: {
+      filename:"default_image_profile.png",
+      filepath: `${req.protocol}://${IP.address()}:${req.socket.localPort}/public/images/user/default_image_profile.png`,
+    },
+    // defaultPicture:  `${req.protocol}://${req.headers.host}/public/images/user/default_image_profile.png`,
+    address: req.body.address,
+  }, {
+    include:[ImageProfile]
   })
     // get role berdasarkan nama
     .then(user => {
@@ -33,7 +40,7 @@ exports.signup = (req, res) => {
           user.setRoles(roles).then(() => {
             res.send({ message: "User was registered successfully!" });
           });
-        });
+        })
       } else {
         // user role = 1
         user.setRoles([1]).then(() => {

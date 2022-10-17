@@ -29,14 +29,14 @@ module.exports = function (app) {
     [authJwt.verifyToken], controller.createPostComment)
 
   //update user to admin (super admin)
-  app.put("/update/user/:userId/role/:roleId", [authJwt.verifyToken, authJwt.isSuperAdmin], controller.updateUsertoAdmin)
+  app.put("/update/user/:userId", [authJwt.verifyToken, authJwt.isSuperAdmin], controller.updateUsertoAdmin)
 
   //delete comment (admin)
   app.post("/delete/comment/:id", [authJwt.verifyToken, authJwt.isAdmin], controller.deleteCommenByAdmin)
 
 
   // get
-  app.get("/forum", [authJwt.verifyToken], controller.getAllForum);
+  app.get("/forum", controller.getAllForum);
   app.get("/forum/:id", [authJwt.verifyToken], controller.getForumById);
   // app.get("/forum/search", [authJwt.verifyToken], controller.getForumByTitle);
   app.get('/user/profile/forum/:userId', controller.getAllUserProfileForum)

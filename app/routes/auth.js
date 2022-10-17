@@ -1,6 +1,6 @@
 const { verifySignUp } = require("../middleware");
 const controller = require("../controllers/auth");
-
+const defaultImage = require("../controllers/upload") 
 
 module.exports = function(app) {
   app.use(function(req, res, next) {
@@ -11,14 +11,15 @@ module.exports = function(app) {
     next();
   });
 
-  app.get('/signup',controller.signup)
+  // app.get('/signup',controller.signup)
   app.post(
     "/signup",
     [
       verifySignUp.checkDuplicateUsernameOrEmail,
       verifySignUp.checkRolesExisted
     ],
-    controller.signup
+    // defaultImage.uploadDefaultImage,
+    controller.signup,
   );
 
   app.post("/signin", controller.signin);
