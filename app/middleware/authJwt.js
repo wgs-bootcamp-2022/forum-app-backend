@@ -2,9 +2,6 @@ const jwt = require("jsonwebtoken");
 const config = require("../config/auth.js");
 const db = require("../models");
 const User = db.user;
-const morgan = require('morgan');
-const fs = require('fs')
-const filepath = './public/log.json'
 
 
 verifyToken = (req, res, next) => {

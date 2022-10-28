@@ -24,15 +24,19 @@ const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
-db.user = require("../models/user.js")(sequelize, Sequelize);
-db.role = require("../models/role.js")(sequelize, Sequelize);
-db.user_role = require("../models/user_role.js")(sequelize, Sequelize);
-db.forum = require("../models/forum.js")(sequelize, Sequelize);
-db.sub_forum = require("../models/sub_forum.js")(sequelize, Sequelize);
-db.forum_subscription = require("../models/forum_subscription.js")(sequelize, Sequelize);
-db.forum_post = require("../models/forum_post.js")(sequelize, Sequelize);
-db.image_profile = require("../models/image_profile.js")(sequelize, Sequelize);
-db.image_forum = require("../models/image_forum.js")(sequelize, Sequelize);
+db.user = require("./user.js")(sequelize, Sequelize);
+db.role = require("./role.js")(sequelize, Sequelize);
+db.user_role = require("./user_role.js")(sequelize, Sequelize);
+db.forum = require("./forum.js")(sequelize, Sequelize);
+db.sub_forum = require("./sub_forum.js")(sequelize, Sequelize);
+db.forum_subscription = require("./forum_subscription.js")(sequelize, Sequelize);
+db.discussion = require("./forum_post.js")(sequelize, Sequelize);
+db.image_profile = require("./image_profile.js")(sequelize, Sequelize);
+db.image_forum = require("./image_forum.js")(sequelize, Sequelize);
+db.image_subforum = require("./image_subforum.js")(sequelize, Sequelize);
+
+db.log = require("./log.js")(sequelize, Sequelize);
+
 
 
 
@@ -84,11 +88,16 @@ db.sub_forum.belongsTo(db.forum,{
 })
 
 // setiap sub forum mempunyai banyak discussion
-db.sub_forum.hasMany(db.forum_post)
-db.forum_post.belongsTo(db.sub_forum,{
+db.sub_forum.hasMany(db.discussion)
+db.discussion.belongsTo(db.sub_forum,{
   foreignKey:"subForumId"
 })
 
+db.sub_forum.hasOne(db.image_subforum)
+db.image_subforum.belongsTo(db.sub_forum, {
+  as:"image_subforum",
+  foreignKey:"subForumId"
+})
 db.ROLES = ["user", "admin", "superadmin"];
 
 module.exports = db;

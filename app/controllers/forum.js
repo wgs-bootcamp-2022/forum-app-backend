@@ -8,12 +8,16 @@ const User = db.user;
 const UserRole = db.user_role;
 const ImageProfile = db.image_profile;
 const ImageForum = db.image_forum;
+const Discussion = db.discussion;
+
+const Op = db.Sequelize.Op;
+const Role = db.role;
 
 const ForumSubscription = db.forum_subscription;
 const path = require("path");
 const { image_profile, user_role } = require("../models");
 const sequelize = db.sequelize;
-const IP = require('ip');
+const IP = require("ip");
 //get image
 exports.getImage = (req, res) => {
   const { filename } = req.params;
@@ -39,25 +43,64 @@ exports.getImage = (req, res) => {
     );
 };
 //create main forum
-exports.createForum = (req, res) => {
-  Forum.create({
-    title: req.body.title,
-    description: req.body.description,
-    content: req.body.content,
-    image_forum:{
-      filename:"default picture forum",
-      filepath: `${req.protocol}://${IP.address()}:${req.socket.localPort}/public/images/forum/default_image_forum.png`,
-    }
-  },{
-    include:[ImageForum]
+exports.joinForum = (req, res) => {
+  ForumSubscription.create({
+    forumId: req.body.forumId,
+    userId: req.body.userId,
+    status: req.body.status,
+    isRequest: req.body.isRequest,
   })
-    .then(user => {
+    .then(() => {
+      res.send({ message: "Join was successfully!" });
+    })
+    .catch((err) => {
+      res.status(500).send({ message: err.message });
+    });
+};
+
+//edit join by admin
+
+exports.responseJoin = (req, res) => {
+  ForumSubscription.update(req.body, {
+    where: {
+      forumId: req.body.forumId,
+      userId: req.body.userId,
+    },
+  })    .then(() => {
+    res.send({ message: "Update Join was successfully!" });
+  })
+  .catch((err) => {
+    res.status(500).send({ message: err.message });
+  });
+};
+exports.createForum = (req, res) => {
+  Forum.create(
+    {
+      title: req.body.title,
+      description: req.body.description,
+      content: req.body.content,
+      type: req.body.type,
+      category: req.body.category,
+      status: req.body.status,
+      image_forum: {
+        filename: "default picture forum",
+        // filepath: `${req.protocol}://${IP.address()}:${
+        //   req.socket.localPort
+
+        filepath: `${req.protocol}://${req.hostname}:${req.socket.localPort}/public/images/forum/default_image_forum.png`,
+      },
+    },
+    {
+      include: [ImageForum],
+    }
+  )
+    .then((user) => {
       if (req.body.userId) {
         User.findAll({
           where: {
             id: req.body.userId,
           },
-        }).then(userId => {
+        }).then((userId) => {
           user.setUsers(userId).then(() => {
             res.send({ message: "Forum was registered successfully!" });
           });
@@ -71,29 +114,35 @@ exports.createForum = (req, res) => {
 
 // create sub forum
 exports.createSubForum = (req, res) => {
-  console.log("ini forum id", req.body.forumId)
+  console.log("ini forum id", req.body.forumId);
 
   SubForum.create({
     title: req.body.title,
     description: req.body.description,
     picture: req.body.picture,
-    content: req.body.contett,
+    content: req.body.content,
     message: req.body.message,
+
+    forumId: req.body.forumId,
   })
-  .then(forum => {
-    console.log("ini forum id", req.body.forumId)
-    if (req.body.forumId) {
-      Forum.findAll({
-        where: {
-          id: req.body.forumId,
-        },
-      }).then(forumId => {
-        forum.setForums(forumId).then(() => {
-          res.send({ message: "Sub Forum was registered successfully!" });
-        });
-      });
-    }
+    .then((forum) => {
+      res.send({ message: "Sub Forum was registered successfully!" });
+    })
+    .catch((err) => {
+      res.status(500).send({ message: err.message });
+    });
+};
+
+// sort forum from latest updated
+exports.sortForums = (req, res) => {
+  Forum.findAll({
+    limit: 10,
+    order: [["updatedAt", "DESC"]],
+    attributes: ["title"],
   })
+    .then((data) => {
+      res.json(data);
+    })
     .catch((err) => {
       res.status(500).send({ message: err.message });
     });
@@ -101,13 +150,13 @@ exports.createSubForum = (req, res) => {
 
 //create comment di sub forum masing-masing
 exports.createPostComment = (req, res) => {
-  ForumPost.create({
+  Discussion.create({
     // id: req.body.id,
     message: req.body.message,
-    content: req.body.content,
+    // content: req.body.content,
     subForumId: req.body.subForumId,
   })
-    .then((user) => {
+    .then(() => {
       res.send({ message: "Commnent was created!" });
     })
     .catch((err) => {
@@ -115,16 +164,13 @@ exports.createPostComment = (req, res) => {
     });
 };
 //update user menjadi admin
-exports.updateUsertoAdmin = async (req, res) => {
+exports.updateUser = async (req, res) => {
   // const roleUpdate = req.body.roleId
-  await UserRole.update(
-    req.body,
-    {
-      where: {
-        userId: +req.params.userId,
-      },
-    }
-  );
+  await UserRole.update(req.body, {
+    where: {
+      userId: +req.params.userId,
+    },
+  });
   res.json("Update User was succes");
 };
 
@@ -140,21 +186,50 @@ exports.deleteCommenByAdmin = async (req, res) => {
 
 //get all forum
 exports.getAllForum = async (req, res) => {
-  const forums = await Forum.findAll({
-    attributes:["title","description","content","createdAt"],
-      include:[
-        {
-          model: ImageForum,
-          attributes: ["filename","filepath"],
-        }
-      ]
-    }
-
-  );
-  res.json(forums);
+  sequelize
+    .query(
+      `SELECT f."isRequest", f.status, c.type, c.id, a.name, a.username, a.email, c."createdAt" as "forum_created", c.title, c.description, c.content, d.filepath as "image_forum", e.filepath as "image_user" from users a 
+      JOIN forum_subscriptions b ON a.id = b."userId"
+      JOIN forums c ON c.id = b."forumId"
+      JOIN image_forums d ON c.id = d."forumId"
+      JOIN image_profiles e ON a.id = e."userId"
+      JOIN forum_subscriptions f ON a.id = f."userId" AND c.id = f."forumId"
+      ORDER BY a.id`
+    )
+    .then((data) => {
+      res.json(data[0]);
+    })
+    .catch((err) => {
+      res.send(err);
+    });
 };
 
-// get all user 
+exports.getllRequested = (req,res) => {
+  sequelize
+    .query(
+      `SELECT a.id as user_id, f."isRequest", f.status, c.type, c.id, a.name, a.username, a.email, c."createdAt" as "forum_created", c.title, c.description, c.content, d.filepath as "image_forum", e.filepath as "image_user" from users a 
+      JOIN forum_subscriptions b ON a.id = b."userId"
+      JOIN forums c ON c.id = b."forumId"
+      JOIN image_forums d ON c.id = d."forumId"
+      JOIN image_profiles e ON a.id = e."userId"
+      JOIN forum_subscriptions f ON a.id = f."userId" AND c.id = f."forumId"
+      WHERE f."isRequest" = true
+      ORDER BY a.id`
+    )
+    .then((data) => {
+      res.json(data[0]);
+    })
+    .catch((err) => {
+      res.send(err);
+    });
+}
+
+// exports.getAllForum = async(req, res) => {
+//   const forums = await Forum.findAll()
+//   res.json(forums)
+// }
+
+// get all user
 exports.getaAllUser = async (req, res) => {
   const users = await User.findAll();
   res.json(users);
@@ -164,13 +239,21 @@ exports.getaAllUser = async (req, res) => {
 exports.getaAllDataUser = (req, res) => {
   const id = +req.params.id;
   User.findAll({
-    attributes: ["name", "username", "address","email","phone", "createdAt", "updatedAt"],
+    attributes: [
+      "name",
+      "username",
+      "address",
+      "email",
+      "phone",
+      "createdAt",
+      "updatedAt",
+    ],
     // where: { id: id },
     include: [
       {
         model: ImageProfile,
         where: { userId: id },
-        attributes: ["filename","filepath"],
+        attributes: ["filename", "filepath"],
       },
     ],
   })
@@ -184,23 +267,60 @@ exports.getaAllDataUser = (req, res) => {
 
 //searching berdasarkan query params title
 exports.findByTitle = async (req, res) => {
-  // const title = req.query.title
-  const forum = await Forum.findAll({
-    where: {
-      title : req.query.title
-    }
-  })
-  res.json(forum)
-} 
-// // exports.getUserById = async (req, res) => {
-//   const user = await User.findByPk(+req.params.id);
-//   res.json(user);
-// };
+  const title = req.query.title;
+  const condition = title ? { title: { [Op.iLike]: `%${title}%` } } : null;
+
+  Forum.findAll({ where: condition })
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving forum title.",
+      });
+    });
+};
 
 //get forum by id
-exports.getForumById = async (req, res) => {
-  const forum = await Forum.findByPk(+req.params.id);
-  res.json(forum);
+exports.getForumById = (req, res) => {
+  // const id = req.params.id
+  // Forum.findAll({
+  //   include:[
+  //     {
+  //       model: User,
+  //       // as:"user",
+  //       where: {forumId: id}
+  //     }
+
+  //   ]
+  // })
+  // .then((data)=>{
+  //   res.json(data[0])
+  // })
+  // .catch((err) => {
+  //   res.status(500).send({
+  //     message:
+  //       err.message || "Some error occurred while retrieving forum detail.",
+  //   });
+  // });
+  const forumId = req.params.forumId;
+  sequelize
+    .query(
+      `SELECT a.name, a.username, a.email, c."createdAt" as "forum created", c.title, c.description, c.content, d.filepath as "image_forum", e.filepath as "image_user" from users a 
+  JOIN forum_subscriptions b ON a.id = b."userId"
+  JOIN forums c ON c.id = b."forumId"
+  JOIN image_forums d ON c.id = d."forumId"
+  JOIN image_profiles e ON a.id = e."userId"
+  WHERE c.id = ${forumId}
+  ORDER BY a.id`
+    )
+    .then((data) => {
+      res.json(data[0][0]);
+    })
+    .catch((err) => {
+      res.send(err);
+    });
 };
 
 exports.getForumByTitle = async (req, res) => {
@@ -209,15 +329,26 @@ exports.getForumByTitle = async (req, res) => {
 };
 //get all sub forum
 exports.getSubForumAll = async (req, res) => {
-  const subForums = await SubForum.findAll();
-  res.send(subForums);
+  const subForums = await SubForum.findAll({
+    where: {
+      forumId: req.params.id,
+    },
+  });
+  res.send(subForums[0]);
 };
 
 // get sub-forum berdasarkan forum
-exports.getSubForumByForumId = async (req, res) => {
-  const forumId = await Forum.findOne({ where: { id: +req.params.id } });
-  const subForumsByForumId = await SubForum.findByPk(forumId.id);
-  res.send(subForumsByForumId);
+exports.getSubForumByForumId = (req, res) => {
+  SubForum.findOne({
+    where: { id: +req.params.id },
+    include: [Discussion],
+  })
+    .then((forums) => {
+      res.send(forums);
+    })
+    .catch((err) => {
+      res.send(err);
+    });
 };
 
 //get semua comment
@@ -323,16 +454,21 @@ exports.getAllUserProfileForum = (req, res) => {
 //   })
 // }
 
-//get all forums that include sub forums
-exports.forumSubForum = (req, res) => {
-  const id = +req.params.id;
-  Forum.findAll({
-    attributes: ["title", "description", "picture", "content"],
+//get all forums that include sub forums to comment by forum id
+
+exports.forumDetail = (req, res) => {
+  const id = req.params.id;
+  Forum.findOne({
     include: [
+      ImageForum,
       {
         model: SubForum,
         where: { forumId: id },
-        attributes: ["id", "title", "description", "picture", "content"],
+        include: [Discussion],
+        // limit: 10,
+        // offset:10,
+
+        // order: [["updatedAt", "DESC"]],
       },
     ],
   })
@@ -340,14 +476,68 @@ exports.forumSubForum = (req, res) => {
       res.send(forums);
     })
     .catch((err) => {
-      res.send(">> Error while findinf Forum: ", err);
+      res.send(err);
+    });
+};
+
+//get forum by userID
+
+exports.getForumByUser = (req, res) => {
+  User.findOne({
+    attributes: [
+      "name",
+      "username",
+      "address",
+      "email",
+      "phone",
+      "createdAt",
+      "updatedAt",
+    ],
+    where: {
+      id: req.params.userId,
+    },
+    include: [
+      {
+        model: Forum,
+        include: [
+          {
+            model: SubForum,
+          },
+        ],
+      },
+    ],
+  })
+    .then((data) => {
+      res.json(data);
+    })
+    .catch((err) => {
+      res.send(err);
+    });
+};
+
+exports.deleteForum = (req, res) => {
+  Forum.destroy({
+    where: {
+      id: req.params.id,
+    },
+    include: [
+      {
+        model: SubForum,
+      },
+    ],
+  })
+    .then(() => {
+      res.json("Success");
+    })
+    .catch((err) => {
+      res.send(err);
     });
 };
 
 //get all sub forum that include discussion
 exports.subForumDiscussion = (req, res) => {
   const id = +req.params.id;
-  SubForum.findAll({
+  SubForum.findOne({
     attributes: ["title", "description", "picture", "content"],
     include: [
       {
@@ -439,6 +629,97 @@ exports.userRole = (req, res) => {
   INNER JOIN user_roles b ON a.id = b."userId"
   WHERE a.id = '${userId}'`
     )
+    .then((data) => {
+      res.json(data[0]);
+    })
+    .catch((err) => {
+      res.send(err);
+    });
+};
+exports.getUserById = (req, res) => {
+  User.findAll({
+    where: {
+      id: req.params.userId,
+    },
+  })
+    .then((data) => {
+      res.json(data[0]);
+    })
+    .catch((err) => {
+      res.send(err);
+    });
+};
+exports.getUserRoleAll = (req, res) => {
+  User.findAll({
+    attributes: [
+      "id",
+      "username",
+      "name",
+      "email",
+      "gender",
+      "address",
+      "phone",
+      "createdAt",
+      "updatedAt",
+    ],
+    include: [
+      {
+        model: Role,
+        attributes: ["name"],
+      },
+      {
+        model: ImageProfile,
+        attributes: ["filename", "filepath"],
+      },
+    ],
+  })
+    .then((data) => {
+      res.json(data);
+    })
+    .catch((err) => {
+      res.send(err);
+    });
+};
+
+exports.countUser = (req, res) => {
+  User.findAll({
+    attributes: [[sequelize.literal("COUNT(id)"), "total_user"]],
+  })
+    .then((data) => {
+      res.json(data[0]);
+    })
+    .catch((err) => {
+      res.send(err);
+    });
+};
+
+exports.countForum = (req, res) => {
+  Forum.findAll({
+    attributes: [[sequelize.literal("COUNT(id)"), "total_forum"]],
+  })
+    .then((data) => {
+      res.json(data[0]);
+    })
+    .catch((err) => {
+      res.send(err);
+    });
+};
+
+exports.countSubForum = (req, res) => {
+  SubForum.findAll({
+    attributes: [[sequelize.literal("COUNT(id)"), "total_subforum"]],
+  })
+    .then((data) => {
+      res.json(data[0]);
+    })
+    .catch((err) => {
+      res.send(err);
+    });
+};
+exports.countComment = (req, res) => {
+  Discussion.findAll({
+    attributes: [[sequelize.literal("COUNT(id)"), "total_comment"]],
+  })
     .then((data) => {
       res.json(data[0]);
     })

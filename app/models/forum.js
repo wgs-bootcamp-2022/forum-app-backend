@@ -11,6 +11,16 @@ module.exports = (sequelize, Sequelize) => {
       },
       content: {
         type: Sequelize.STRING
+      },
+      type:{
+        type: Sequelize.STRING
+      },
+      category:{
+        type: Sequelize.STRING
+      },
+      status:{
+        type: Sequelize.BOOLEAN,
+        defaultValue: true,
       }
     });
   

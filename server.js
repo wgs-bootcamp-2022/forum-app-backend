@@ -10,7 +10,8 @@ const os = require('os')
 const log = require('./app/middleware')
 const db = require("./app/models");
 const Role = db.role;
-
+const logger = require('express-log-psql');
+// const appLog = require("./app/middleware")
 
 // db.sequelize.sync({force: true}).then(() => {
 //   console.log('Drop and Resync Db');
@@ -18,11 +19,20 @@ const Role = db.role;
 // });
 db.sequelize.sync();
 
+
+
 app.use(cors())
 app.use(expressLayouts)
 app.use(express.urlencoded({ extended: false })); // Untuk parsing body request
 app.use(express.json());
+
 app.use('/public', express.static(path.join(__dirname, 'public')))
+
+app.use(logger('default', {
+  url: 'postgresql://postgres:hajiamaru@localhost:5432/db_forum',
+  table: 'logs'
+}));
+
 app.set('layout', './layout/home')
 app.set('view engine', 'ejs');
 
@@ -56,15 +66,15 @@ const format =  json({
   pid: ':pid'
 });
 
-
-// // create app log
-const accessLogStream = fs.createWriteStream('./public/logging/log.log');
-app.use(morgan({format: format, stream: {
-  write: function(str)
-  {
-    accessLogStream.write(str);
-  }
-}}));
+// log.appLog()
+// create app log
+// const accessLogStream = fs.createWriteStream('./public/logging/log.log');
+// app.use(morgan({format: format, stream: {
+//   write: function(str)
+//   {
+//     log.write(str);
+//   }
+// }}));
 
 // parse requests of content-type - application/x-www-form-urlencoded
 // app.use(express.urlencoded({ extended: true }));
@@ -94,7 +104,7 @@ require('./app/routes/forum')(app);
 
 
 // set port, listen for requests
-const PORT = 4000;
+const PORT = 5000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);
 });

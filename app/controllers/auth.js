@@ -20,7 +20,8 @@ exports.signup = (req, res) => {
     //otomatis tambah foto profil ketika register
     image_profile: {
       filename:"default_image_profile.png",
-      filepath: `${req.protocol}://${IP.address()}:${req.socket.localPort}/public/images/user/default_image_profile.png`,
+      // filepath: `${req.protocol}://${IP.address()}:${req.socket.localPort}/public/images/user/default_image_profile.png`,
+      filepath: `${req.protocol}://${req.hostname}:${req.socket.localPort}/public/images/user/default_image_profile.png`,
     },
     // defaultPicture:  `${req.protocol}://${req.headers.host}/public/images/user/default_image_profile.png`,
     address: req.body.address,
@@ -56,6 +57,8 @@ exports.signup = (req, res) => {
 // proses signin
 exports.signin = (req, res) => {
   // get user berdasarkan username
+  console.log("ini ",typeof(req.body.username));
+
   User.findOne({
     where: {
       username: req.body.username
