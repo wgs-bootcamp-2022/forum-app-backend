@@ -42,6 +42,7 @@ db.log = require("./log.js")(sequelize, Sequelize);
 
 // user dan role many to many, user bisa mempunyai banyak role dan setiap role punya banyak user
 db.role.belongsToMany(db.user, {
+  as: "role",
   through: db.user_role,
   foreignKey: "roleId",
   otherKey: "userId"

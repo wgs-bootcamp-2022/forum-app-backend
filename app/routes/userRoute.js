@@ -1,39 +1,107 @@
-// const controller = require("../controllers/forum");
-// const controllerImage = require("../controllers/upload");
+/** @format */
 
-// const { authJwt } = require("../middleware");
+const controller = require("../controllers/forum");
+const controllerImage = require("../controllers/upload");
+const logController = require("../controllers/log");
+const { authJwt } = require("../middleware");
+const auth = require("./auth");
+
+module.exports = function (app) {
+  app.use(function (req, res, next) {
+    res.header(
+      "Access-Control-Allow-Origin",
+      "Access-Control-Allow-Headers",
+      "x-access-token, Origin, Content-Type, Accept"
+    );
+    next();
+  });
+
+  //create main forum (admin)
+  app.get("/comment/all", [authJwt.verifyToken], controller.getAllComment);
+
+  app.get(
+    "/profile/details/:id",
+    [authJwt.verifyToken],
+    controller.getaAllDataUser
+  );
+
+  //create sub forum (user, admin, superadmin)
+  app.post(
+    "/forum/sub_forum",
+    [authJwt.verifyToken],
+    controller.createSubForum
+  );
+
+  //create discussion in subforum (user, admin, superadmin)
+  app.post(
+    "/forum/sub_forum/comment",
+    [authJwt.verifyToken],
+    controller.createPostComment
+  );
+
+  // get
+  app.get("/forum", controller.getAllForum);
+
+  app.get("/forum/:forumId", [authJwt.verifyToken], controller.getForumById);
+  // app.get("/forum/search", [authJwt.verifyToken], controller.getForumByTitle);
+  app.get("/user/profile/forum/:userId", controller.getAllUserProfileForum);
+
+  // app.get("forum/subforum/:id", [authJwt.verifyToken], controller.getSubForumAll);
+  app.get(
+    "/forum/subforum/:id",
+    [authJwt.verifyToken],
+    controller.getSubForumByForumId
+  );
+
+  app.get("/comment/all", [authJwt.verifyToken], controller.getAllComment);
+
+  app.get(
+    "/profile/details/:id",
+    [authJwt.verifyToken],
+    controller.getaAllDataUser
+  );
+
+  app.get("/forum/search/query", controller.findByTitle);
+
+  // uplodat image profile
+
+  app.post(
+    "/profile/image/add/:userId",
+    [authJwt.verifyToken],
+    controllerImage.removeImageProfile,
+    controllerImage.upload.single("image"),
+    controllerImage.uploadImage
+  );
+
+  app.post(
+    "/forum/subforum/image/add/:subForumId",
+    [authJwt.verifyToken],
+    controllerImage.removeImageSubForum,
+    controllerImage.uploadImageSubF.single("image"),
+    controllerImage.uploadImageSubForum
+  );
+
+  app.get(
+    "/forum/subforum/all/:id",
+    [authJwt.verifyToken],
+    controller.forumDetail
+  );
+  app.get("/forum/subforum/forumpost/:id", controller.subForumDiscussion);
+  app.get(
+    "/forum/subforum/discussion/all/:id",
+    [authJwt.verifyToken],
+    controller.getAllDiscussion
+  );
+  app.post("/forum/join", [authJwt.verifyToken], controller.joinForum);
+  app.get("/user/:userId", [authJwt.verifyToken], controller.getUserById);
 
 
-// module.exports = function(app) {
-//   app.use(function(req, res, next) {
-//     res.header(
-//       "Access-Control-Allow-Origin",
-//       "Access-Control-Allow-Headers",
-//       "x-access-token, Origin, Content-Type, Accept"
-//     );
-//     next();
-//   });
+  //   app.get("/forum/to_post/:forumId/:subForumId", controller.forumToPost);
+  //   app.get("/profile/image/:filename", controller.getImage);
+  //   app.get("/forum/profil/:id", controller.userProfile);
 
-//   app.post("/forum/sub_forum",
-//   [authJwt.verifyToken], controller.createSubForum)
+  //   app.get("/user/profil/:userId", controller.userRole);
 
-//   //create discussion in subforum (comment)
-//   app.post("/forum/sub_forum/comment",
-//   [authJwt.verifyToken], controller.createPostComment)
+  //   app.get("/forum/all/sort_update", controller.sortForums);
 
-//   // upload forum picture
-//   app.post('/forum/image/add',[authJwt.verifyToken], controllerImage.uploadImageF.single('image'), controllerImage.uploadImageForum)
-
-//   // get
-//   app.get("/forum", controller.getAllForum );
-//   app.get("/forum/:id",[authJwt.verifyToken],controller.getForumById);
-//   app.get("forum/subforum",[authJwt.verifyToken],controller.getSubForumAll);
-//   app.get("/forum/subforum/:id",[authJwt.verifyToken],controller.getSubForumByForumId);
-//   app.get('/forum/profil/:id',[authJwt.verifyToken], controller.userProfile)
-//   app.get('/profile/image/:filename',[authJwt.verifyToken], controller.getImage);
-  
-//   app.get('/forum/subforum/forumpost/:id',controller.subForumDiscussion)
-
-//   app.get('/forum/to_post/:forumId/:subForumId',controller.forumToPost)
-//   app.get('/forum/monitoring/:userId',controller.getAllUserProfileForum)
-// };
+};

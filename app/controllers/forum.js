@@ -555,6 +555,24 @@ exports.subForumDiscussion = (req, res) => {
     });
 };
 
+//get all discussion by forumid
+
+exports.getAllDiscussion = (req, res) => {
+  Discussion.findAll({
+    where:{
+      subForumId: +req.params.id
+    },
+    order:[
+      ['createdAt', 'DESC'],
+    ]
+  })  .then((forums) => {
+    res.json(forums);
+  })
+  .catch((err) => {
+    res.json(">> Error while finding DIscussion: ", err);
+  })
+}
+
 exports.userProfile = (req, res) => {
   const id = +req.params.id;
   User.findAll({

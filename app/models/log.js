@@ -1,41 +1,30 @@
 module.exports = (sequelize, Sequelize) => {
     const ImageProfile = sequelize.define("logs", {
-      date: {
-        type: Sequelize.STRING
+      username: {
+        type: Sequelize.STRING,
       },
-      method:{
-        type: Sequelize.STRING
+      email: {
+        type: Sequelize.STRING,
       },
-      url :{
-        type: Sequelize.STRING
+
+      client_ip: {
+        type: Sequelize.STRING,
       },
-    //   http_version :{
-    //     type: Sequelize.STRING
-    //   },
-    //   status :{
-    //     type: Sequelize.STRING
-    //   },
-    //   length :{
-    //     type: Sequelize.STRING
-    //   },
-    //   response_time :{
-    //     type: Sequelize.STRING
-    //   },
-    //   user_agent :{
-    //     type: Sequelize.STRING
-    //   },
-    //   session_id :{
-    //     type: Sequelize.STRING
-    //   },
-    //   hostname :{
-    //     type: Sequelize.STRING
-    //   },
-    //   instance :{
-    //     type: Sequelize.STRING
-    //   },
-    //   pid :{
-    //     type: Sequelize.STRING
-    //   },
+      request_method: {
+        type: Sequelize.STRING,
+      },
+      endpoint: {
+        type: Sequelize.STRING,
+      },
+      status_code: {
+        type: Sequelize.STRING,
+      },
+      content_length: {
+        type: Sequelize.STRING,
+      },
+      response_time: {
+        type: Sequelize.STRING,
+      }
     });
   
     return ImageProfile;

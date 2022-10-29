@@ -2,7 +2,7 @@
 
 const controller = require("../controllers/forum");
 const controllerImage = require("../controllers/upload");
-
+const logController = require("../controllers/log")
 const { authJwt } = require("../middleware");
 const auth = require("./auth");
 
@@ -104,6 +104,8 @@ module.exports = function (app) {
   app.get("/forum/subforum/all/:id", [authJwt.verifyToken],controller.forumDetail);
   app.get("/forum/subforum/forumpost/:id", controller.subForumDiscussion);
   app.get("/forum/profil/:id", controller.userProfile);
+  app.get("/forum/subforum/discussion/all/:id",[authJwt.verifyToken], controller.getAllDiscussion);
+
 
   app.get("/user/profil/:userId", controller.userRole);
 
@@ -135,5 +137,7 @@ module.exports = function (app) {
   app.get("/forum/count/total", controller.countForum);
   app.get("/subforum/count/total", controller.countSubForum);
   app.get("/comment/count/total", controller.countComment);
+
   
+  app.get("/log", logController.getLog)
 };

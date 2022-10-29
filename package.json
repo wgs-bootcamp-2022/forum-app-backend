@@ -17,6 +17,7 @@
     "express": "^4.18.1",
     "express-ejs-layouts": "^2.5.1",
     "express-log-psql": "^1.0.0",
+    "google-auth-library": "^8.6.0",
     "ip": "^1.1.8",
     "jsonwebtoken": "^8.5.1",
     "knex": "^2.3.0",
